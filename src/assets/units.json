@@ -1,0 +1,22 @@
+{
+    "units": [
+      {
+        "unitCode": "Steve",
+        "unitName": "Hello0",
+        "nominalHours": 5,
+        "core": false
+      },
+      {
+        "unitCode": "Steve1",
+        "unitName": "Hello1",
+        "nominalHours": 5,
+        "core": false
+      },
+      {
+        "unitCode": "Steve2",
+        "unitName": "Hello2",
+        "nominalHours": 5,
+        "core": true
+      }
+    ]
+  }

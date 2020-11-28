@@ -1,0 +1,12 @@
+.break { page-break-after : always; }
+
+@page{
+	margin: 29px;
+	boarder: 0;
+}
+
+textarea { border: none; }
+input { border: none; }
+table, td {
+    border: 1px solid black;
+}

@@ -1,0 +1,16 @@
+.multi_lines_text { 
+    white-space: pre-line; 
+}
+
+.break { page-break-before: always; }
+
+@page{
+	margin: 29px;
+	boarder: 0;
+}
+
+textarea { border: none; }
+input { border: none; }
+table, td, th {
+    border: 1px solid black;
+}
