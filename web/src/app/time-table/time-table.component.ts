@@ -47,7 +47,7 @@ import { TrainingPlan } from "../models/training-plan.interface";
               }}</textarea>
             </td>
             <td>{{ row.nominal_hours }}</td>
-            <td>{{ row.core === "1" ? "Core" : "Elective" }}</td>
+            <td>{{ row.core ? "Core" : "Elective" }}</td>
             <td></td>
             <td>Yes / No</td>
             <td>Yes / No</td>
@@ -88,7 +88,7 @@ import { TrainingPlan } from "../models/training-plan.interface";
             </td>
             <td>{{ getDate(row.order_number) }}</td>
             <td>{{ unit.value.nominal_hours }}</td>
-            <td>{{ row.core === "1" ? "Core" : "Elective" }}</td>
+            <td>{{ row.core ? "Core" : "Elective" }}</td>
             <td></td>
             <td>Yes / No</td>
             <td>Yes / No</td>
