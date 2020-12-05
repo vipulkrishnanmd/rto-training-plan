@@ -6,9 +6,9 @@ Class UnitOffering{
 	public $course;
 	
 	function __construct($id,$unit,$course){
-		$this -> unit_offering_id = $id;
-		$this -> unit = $unit;
-		$this -> course = $course;
+		$this->unit_offering_id = $id;
+		$this->unit = $unit;
+		$this->course = $course;
 	}
 }
 

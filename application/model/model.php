@@ -8,58 +8,13 @@ require APP . 'entity/UnitOffering.php';
 
 class Model
 {
-	private $servername;
-	private $username;
-	private $password;
-	private $dbname;
-
-    /**
-     * @param object $db A PDO database connection
-     */
+    private $db;
+    
     public function __construct($db)
     {
-		$this->servername = "localhost";
-		$this->username = "jtioz_tp";
-		$this->password = "jtitp2017";
-		$this->dbname = "jtioz_timetableapp";
-
-        try {
-            $this->db = $db;
-        } catch (PDOException $e) {
-            exit('Database connection could not be established.');
-        }
-    }
-    /*
-    function logIn($username, $password){
-    $sql = "SELECT password FROM users WHERE username = ?";
-    $query = $this->db->prepare($sql);
-    $query->bind_param("s",$username);
-    $query->execute();
-    $query->bind_result($result);
-    $query->fetch();
-    if($result == $password)
-    return true;
-    else
-    return false;
+        $this->db = $db;
     }
 
-    function signUp($username, $password, $name, $mob, $email){
-    $sql = "INSERT INTO users VALUES (?,?,?,?,?,?)";
-    $query = $this->db->prepare($sql);
-    $query->bind_param("ssssss",$username, $password, $name, $notVerified, $email, $mob);
-    $notVerified = "not verified";
-    $success = $query->execute();
-
-    if ($success == true)
-    return true;
-    else
-    return false;
-    }
-     */
-
-    /**
-     * using
-     */
     public function getAllCourses()
     {
         $courses = array();
@@ -82,9 +37,7 @@ class Model
         return $course;
     }
 
-    /**
-     * using
-     */
+
     public function getAllCampuses()
     {
         $campuses = array();
@@ -107,9 +60,7 @@ class Model
         return $campus;
     }
 
-    /**
-     * using
-     */
+
     public function createNewTp($name, $course, $campus, $startdate, $enddate, $timing, $strength, $method, $days)
     {
         $sql = "INSERT INTO `training_plans` (`tp_name`, `course_id`, `campus_id`, `start_date`, `end_date`, `time`, `strength`, `training_method`, `days`) VALUES ('$name', '$course', '$campus', '$startdate', '$enddate', '$timing', '$strength', '$method', '$days')";
@@ -149,57 +100,33 @@ class Model
 
     public function addNewRow($timetableId, $orderNumber)
     {
-        $servername = $this->servername;
-        $username = $this->username;
-        $password = $this->password;
-        $dbname = $this->dbname;
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
         $sql = "update table_rows set order_number = (order_number + 1) where timetable_id = $timetableId and order_number >= $orderNumber";
 
-        if ($conn->query($sql) === true) {
+        if ($this->db->query($sql) === true) {
             $result = json_encode(array("status" => "success"));
         } else {
-            $result = json_encode(array("status" => $conn->error));
+            $result = json_encode(array("status" => $this->db->error));
         }
 
         $sql = "insert into table_rows (unit_id, order_number, timetable_id) values (1, $orderNumber, $timetableId)";
 
-        if ($conn->query($sql) === true) {
+        if ($this->db->query($sql) === true) {
             $result = json_encode(array("status" => "success"));
         } else {
-            $result = json_encode(array("status" => $conn->error));
+            $result = json_encode(array("status" => $this->db->error));
         }
-        $conn->close();
+        $this->db->close();
         return $result;
     }
 
     public function rollOver($timetableId, $mode)
     {
-        $servername = $this->servername;
-        $username = $this->username;
-        $password = $this->password;
-        $dbname = $this->dbname;;
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
         $sql = "update table_rows set order_number = (order_number - $mode) where timetable_id = $timetableId";
 
-        if ($conn->query($sql) === true) {
+        if ($this->db->query($sql) === true) {
             $result = json_encode(array("status" => "success"));
         } else {
-            $result = json_encode(array("status" => $conn->error));
+            $result = json_encode(array("status" => $this->db->error));
         }
 
 		if ($mode == 1)  {
@@ -207,84 +134,48 @@ class Model
 		} else {
 			$sql = "update table_rows set order_number = 1 where timetable_id = $timetableId and order_number = (select max(order_number) from (select * from table_rows) as m where m.timetable_id = $timetableId)";
 		}
-        if ($conn->query($sql) === true) {
+        if ($this->db->query($sql) === true) {
             $result = json_encode(array("status" => "success"));
         } else {
-            $result = json_encode(array("status" => $conn->error));
+            $result = json_encode(array("status" => $this->db->error));
         }
 
-        $conn->close();
+        $this->db->close();
         return $result;
 
     }
 
     public function getRows($timeTableId)
     {
-
-        $servername = $this->servername;
-        $username = $this->username;
-        $password = $this->password;
-        $dbname = $this->dbname;
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
         $sql = "SELECT a.*, b.unit_code, b.unit_name, b.nominal_hours, b.core, b.assessment_methods FROM (SELECT * FROM table_rows WHERE timetable_id = " . $timeTableId . " and enabled = 1) a LEFT JOIN units b ON a.unit_id = b.id";
 
-        $result = $conn->query($sql);
+        $result = $this->db->query($sql);
 
         while ($r = mysqli_fetch_assoc($result)) {
             $rows[] = $r;
         }
-        $conn->close();
+        $this->db->close();
 
         return $rows;
     }
 
     public function getUnits($courseId)
     {
-        $servername = $this->servername;
-        $username = $this->username;
-        $password = $this->password;
-        $dbname = $this->dbname;
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
         $sql = "SELECT * FROM course_unit_map c left join units u on c.unit_id = u.id where c.course_id = $courseId";
 
-        $result = $conn->query($sql);
+        $result = $this->db->query($sql);
 
         while ($r = mysqli_fetch_assoc($result)) {
             $rows[] = $r;
         }
 
-        $conn->close();
+        $this->db->close();
 
         return $rows;
     }
 
     public function updateRow($unitId, $rowId, $orderNumber)
     {
-        $servername = $this->servername;
-        $username = $this->username;
-        $password = $this->password;
-        $dbname = $this->dbname;
-
-		// Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-		// Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
         if ($orderNumber == -1) {
             $sql = "update table_rows set unit_id = $unitId where id = $rowId";
         } else {
@@ -292,63 +183,39 @@ class Model
         }
 		
 
-        if ($conn->query($sql) === true) {
+        if ($this->db->query($sql) === true) {
             $result = array("status" => "success");
         } else {
-            $result = array("status" => $conn->error);
+            $result = array("status" => $this->db->error);
         }
-        $conn->close();
+        $this->db->close();
 
         return $result;
 	}
 	
 	public function getTrainingPlan($tpId) {
-		$servername = $this->servername;
-        $username = $this->username;
-        $password = $this->password;
-        $dbname = $this->dbname;;
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
         $sql = "select t.*,c.course_name, c.course_code, c.wp, c.sup_hours, d.campus_name, d.campus_address from (SELECT * FROM training_plans where id = $tpId) as t left join courses c on t.course_id = c.id left join campuses d on t.campus_id = d.id";
 
-		$result = $conn->query($sql);
+		$result = $this->db->query($sql);
 		$rows = [];
 
         while ($r = mysqli_fetch_assoc($result)) {
             $rows[] = $r;
         }
 
-        $conn->close();
+        $this->db->close();
 
         return $rows;
 	}
 
 	public function removeRow($rowId, $timetableId, $orderNumber) {
-		$servername = $this->servername;
-        $username = $this->username;
-        $password = $this->password;
-        $dbname = $this->dbname;
-
-        // Create connection
-        $conn = new mysqli($servername, $username, $password, $dbname);
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
         $sql = "select * from table_rows where timetable_id= $timetableId and order_number = $orderNumber";
 
-		$result = $conn->query($sql);
+		$result = $this->db->query($sql);
 		$rows = [];
 
 		if (!$result){
-			return ['status' => 'failed 1'.$conn->error];
+			return ['status' => 'failed 1'.$this->db->error];
 		}
 
         while ($r = mysqli_fetch_assoc($result)) {
@@ -357,20 +224,20 @@ class Model
 		
 		if (sizeOf($rows) == 1) {
 			$sql = "update table_rows set order_number = order_number - 1 where order_number > $orderNumber";
-			$result = $conn->query($sql);
+			$result = $this->db->query($sql);
 
 			if (!$result){
-				return ['status' => 'failed 2'. $conn->error];
+				return ['status' => 'failed 2'. $this->db->error];
 			}
 		}
 
 		$sql = "update table_rows set enabled = 0 where id = $rowId";
-		$result = $conn->query($sql);
+		$result = $this->db->query($sql);
 
 		if (!$result){
-			return ['status' => 'failed 3'.$conn->error];
+			return ['status' => 'failed 3'.$this->db->error];
 		}
-		$conn->close();
+		$this->db->close();
 		return ['status' => 'success'];
 	}
 }

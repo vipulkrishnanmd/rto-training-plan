@@ -16,7 +16,7 @@ class Tp extends Controller
     }
 
     /*
-     * TO edit a training plans
+     * To edit a training plans
      */
     public function editTp()
     {

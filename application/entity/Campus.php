@@ -1,4 +1,3 @@
-
 <?php
 class Campus{
 	public $campus_id;
@@ -6,8 +5,8 @@ class Campus{
 	public $campus_address;
 	
 	function __construct($id,$name,$address){
-		$this -> campus_id = $id;
-		$this -> campus_name = $name;
-		$this -> campus_address = $address;
+		$this->campus_id = $id;
+		$this->campus_name = $name;
+		$this->campus_address = $address;
 	}
 } 
