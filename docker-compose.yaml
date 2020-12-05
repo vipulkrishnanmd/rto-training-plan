@@ -10,7 +10,7 @@ services:
         depends_on:
             - db
     db:
-        build: ./db
+        image: mysql
         expose:
             - "3306"
         ports:
