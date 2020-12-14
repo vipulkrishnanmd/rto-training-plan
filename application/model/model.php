@@ -6,6 +6,8 @@ require APP . 'entity/Tp.php';
 require APP . 'entity/Unit.php';
 require APP . 'entity/UnitOffering.php';
 
+// Heven't considered possibility of SQL injection anywhere since it is depoyed inside a private nerwork.
+// Have to fix this later anyway. TODO: Replace all with prepared statements.
 class Model
 {
     private $db;
