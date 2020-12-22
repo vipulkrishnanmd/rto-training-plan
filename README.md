@@ -1,4 +1,4 @@
-# rto-training-plan
+# Training plan application for a Registered Training Institute
 This is a small application made for creating training plans for an RTO.
 
 RTO's usually run short term courses where students can enrol throughout the year.
